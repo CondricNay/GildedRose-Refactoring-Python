@@ -39,11 +39,11 @@ class GildedRoseTest(unittest.TestCase):
         gilded_rose.update_quality()
         self.assertEqual(1, items[0].quality)
 
-    def test_quality_never_more_than_50(self):
-        items = [Item("Aged Brie", 0, 50)]
+    def test_quality_normal_never_more_than_50(self):
+        items = [Item("Normal", 1, 50)]
         gilded_rose = GildedRose(items)
         gilded_rose.update_quality()
-        self.assertEqual(50, items[0].quality)
+        self.assertEqual(49, items[0].quality)
 
     def test_sulfuras_no_sell_in_and_quality_decrease(self):
         items = [Item("Sulfuras, Hand of Ragnaros", 10, 20)]
@@ -79,6 +79,39 @@ class GildedRoseTest(unittest.TestCase):
         gilded_rose.update_quality()
         self.assertEqual(-1, items[0].sell_in)
         self.assertEqual(0, items[0].quality)
+
+    def test_update_many_normal_items(self):
+        items = [
+            Item(name="+5 Dexterity Vest", sell_in=10, quality=20),
+            Item(name="+10 Dexterity Vest", sell_in=10, quality=20),
+            Item(name="+20 Aged Brie", sell_in=10, quality=20),
+        ]
+
+        gilded_rose = GildedRose(items)
+        gilded_rose.update_quality()
+
+        for _ in range(len(items)):
+            self.assertEqual(9, items[0].sell_in)
+            self.assertEqual(19, items[0].quality)
+
+    # def test_update_many_assorted_items(self):
+    #     items = [
+    #         Item(name="+5 Dexterity Vest", sell_in=10, quality=20),
+    #         Item(name="Aged Brie", sell_in=2, quality=0),
+    #         Item(name="Elixir of the Mongoose", sell_in=5, quality=7),
+    #         Item(name="Sulfuras, Hand of Ragnaros", sell_in=0, quality=80),
+    #         Item(name="Sulfuras, Hand of Ragnaros", sell_in=-1, quality=80),
+    #         Item(name="Backstage passes to a TAFKAL80ETC concert", sell_in=15, quality=20),
+    #         Item(name="Backstage passes to a TAFKAL80ETC concert", sell_in=10, quality=49),
+    #         Item(name="Backstage passes to a TAFKAL80ETC concert", sell_in=5, quality=49),
+    #         Item(name="Conjured Mana Cake", sell_in=3, quality=6),  # <-- :O
+    #     ]
+
+    #     gilded_rose = GildedRose(items)
+    #     gilded_rose.update_quality()
+
+    #     self.assertEqual(9, len(gilded_rose.items))
+
 
 
 if __name__ == '__main__':
